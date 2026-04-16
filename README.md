@@ -21,6 +21,9 @@ It contains information about individual coffee shop transactions, including:
 
 The raw dataset initially contained over 10,000 records with several data quality problems.
 
+## Tools used
+- MySQL Workbench
+
 ## Data Cleaning Stages
 
 ### 1. Handle invalid and missing values
@@ -41,7 +44,7 @@ FROM dirty_cafe_sales;
 ```
 
 
-Therefore, I followed the following strategy:
+Therefore, I performed the following strategy:
 | Column | Description |
 |--------|-------------|
 | Item | Rows removed (critical field, and represent 9.5% of the dataset). |
@@ -56,4 +59,38 @@ Duplicate Transaction ID values were detected using `GROUP BY`.
 ### 3. Trim whitespaces
 Whitespaces issues were resolved using the `TRIM()` function.
 
-## Exploratory Analysis
+## Exploratory Data Analysis
+After cleaning the dataset, several exploratoy queries were performed
+
+### Top revenue-generating products
+```sql
+SELECT Item, SUM(`Total Spent`) AS revenue,
+COUNT(*) AS transactions
+FROM cafe_sales_clean
+GROUP BY Item
+ORDER BY revenue DESC;
+```
+### Average Order Value
+How much does a customer spend per transaction.
+```sql
+SELECT AVG(`Total Spent`) as avg_order_value
+FROM cafe_sales_clean;
+```
+### Sales by day of week
+```sql
+SELECT DAYNAME(`Transaction Date`) as day,
+SUM(`Total Spent`) AS revenue
+FROM cafe_sales_clean
+GROUP BY day
+ORDER BY revenue DESC;
+```
+
+## Example insights
+Some insights obtained from the cleaned dataset include:
+
+- Certain products, such as Salad, Sandwich and Smoothie, generate significantly higher revenue than others.
+- From the sales by day, we can find behavioral patterns, for example, the peak days, being Monday, Sunday and Friday the days with the highest revenue.
+- The average order value is useful for business decisions, and helps understand pricing strategy.
+
+## Conclusion
+This project demonstrates a typical data preparation workflow used in real-world analytics projects. By cleaning and validating raw transactional data, the dataset becomes suitable for further analysis and business decision-making.
